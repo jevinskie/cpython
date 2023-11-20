@@ -2555,6 +2555,31 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+# Check for --with-dsymutil
+AC_SUBST(DSYMUTIL)
+AC_SUBST(DSYMUTIL_PATH)
+AC_MSG_CHECKING(for --with-dsymutil)
+AC_ARG_WITH(dsymutil,
+            AS_HELP_STRING([--with-dsymutil], [link debug information into final executable with dsymutil in macOS  (default is no)]),
+[
+if test "$withval" != no
+then
+  if test "$MACHDEP" != "darwin"; then
+    AC_MSG_ERROR([dsymutil debug linking is only available in macOS.])
+  fi
+ AC_MSG_RESULT(yes);
+  DSYMUTIL='true'
+else AC_MSG_RESULT(no); DSYMUTIL=
+fi],
+[AC_MSG_RESULT(no)])
+
+if test "$DSYMUTIL"; then
+  AC_PATH_PROG(DSYMUTIL_PATH, [dsymutil], [not found])
+  if test "$DSYMUTIL_PATH" = "not found"; then
+      AC_MSG_ERROR([dsymutil command not found on \$PATH])
+  fi
+fi
+
 AC_MSG_CHECKING(for dyld)
 case $ac_sys_system/$ac_sys_release in
   Darwin/*)
